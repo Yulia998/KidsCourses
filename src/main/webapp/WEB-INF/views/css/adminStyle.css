@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
+.menu-main {
+    list-style: none;
+    margin: 20px 0 5px;
+    padding: 10px 0 5px;
+    text-align: center;
+    background: white;
+}
+.menu-main li {display: inline-block;}
+.menu-main li:after {
+    content: "|";
+    color: blue;
+    display: inline-block;
+    vertical-align:top;
+}
+.menu-main li:last-child:after {content: none;}
+.menu-main a {
+    text-decoration: none;
+    letter-spacing: 2px;
+    position: relative;
+    padding-bottom: 10px;
+    margin: 0 20px 0 15px;
+    font-size: 15px;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: color .2s;
+}
+.menu-main a, .menu-main a:visited {color: cornflowerblue;}
+.menu-main a.current, .menu-main a:hover, .menu-main a:active, .adminTable a:hover, #main-text a:hover{color: chocolate;}
+.menu-main a:before,
+.menu-main a:after {
+    content: "";
+    position: absolute;
+    height: 4px;
+    top: auto;
+    right: 50%;
+    bottom: -5px;
+    left: 50%;
+    background: chocolate;
+    transition: .8s;
+}
+.menu-main a:hover:before, .menu-main {left: 0;}
+.menu-main a:hover:after, .menu-main {right: 0;}
+@media (max-width: 550px) {
+    .menu-main {padding-top: 0;}
+    .menu-main li {display: block;}
+    .menu-main li:after {content: none;}
+    .menu-main a {
+        padding: 25px 0 20px;
+        margin: 0 30px;
+    }
+}
+
+.adminTable{
+    border: 1px solid #69c;
+    border-collapse: collapse;
+    width: 95%;
+    margin: 2%;
+}
+
+.adminTable th {
+    font-weight: normal;
+    border: 1px solid #69c;
+    padding: 7px;
+    background-color: cadetblue;
+    color: beige;
+}
+.adminTable td {
+    padding: 4px;
+    border: 1px solid #69c;
+    text-align: center;
+}
+.add{
+    padding: 15px;
+    margin: auto;
+}
+.container{
+    width: 400px;
+    margin: 3% auto;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border: 1px solid #69c;
+}
+.container td{
+    padding: 10px;
+    width: 150px;
+}
+.adminTable a, #main-text a {
+    text-decoration: none;
+    letter-spacing: 2px;
+    color: blue;
+    transition: color .2s;
+}
+textarea{
+    resize: none;
+}
