@@ -34,7 +34,7 @@
             <select id="employee" required>
                 <option selected> </option>
                 <c:forEach var="employee" items="${employees}">
-                    <option value="${employee.get("id")}">${employee.get("name")}</option>
+                    <option value="${employee.getId()}">${employee.getFullName()}</option>
                 </c:forEach>
             </select>
         </div>

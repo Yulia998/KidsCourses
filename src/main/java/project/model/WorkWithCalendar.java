@@ -25,13 +25,6 @@ public class WorkWithCalendar {
         return "";
     }
 
-    public static void formatDate(Map<String,String> map, String key) {
-        SimpleDateFormat format = new SimpleDateFormat();
-        format.applyPattern("yyyy-MM-dd");
-        String date = map.get(key).substring(0, 10);
-        map.replace(key, date);
-    }
-
     public static List<String> getDatesByDay (List<String> days, List<String> times, String startDate, int numberLes) throws ParseException {
         List<String> dates = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat();

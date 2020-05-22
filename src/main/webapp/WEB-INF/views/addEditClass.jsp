@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="project.model.entities.Child" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
@@ -43,8 +44,8 @@
                     <select name="course" required>
                         <option selected value="${classEdit.get('courseId')}">${classEdit.get('Название курса')}</option>
                         <c:forEach var="course" items="${courses}">
-                            <c:if test="${course.get('id') ne classEdit.get('courseId')}">
-                            <option value="${course.get("id")}">${course.get("Название")}</option>
+                            <c:if test="${course.getId() ne classEdit.get('courseId')}">
+                            <option value="${course.getId()}">${course.getName()}</option>
                             </c:if>
                         </c:forEach>
                     </select>
@@ -70,8 +71,8 @@
                         <option selected value="${tescherId}">${classEdit.get('Помощник')}</option>
                      </c:if>
                         <c:forEach var="employee" items="${employees}">
-                            <c:if test="${employee.get('id') ne tescherId}">
-                                <option value="${employee.get("id")}">${employee.get("Имя")}</option>
+                            <c:if test="${employee.getId() ne tescherId}">
+                                <option value="${employee.getId()}">${employee.getFullName()}</option>
                             </c:if>
                         </c:forEach>
                     </select>
@@ -98,19 +99,19 @@
                 <td><label>Дети</label></td>
                 <td>
                     <% List<HashMap<String, String>> childrenGroup = (List<HashMap<String, String>>)request.getAttribute("childrenGroup");
-                        List<LinkedHashMap<String, String>> children = (List<LinkedHashMap<String, String>>)request.getAttribute("children");
+                        List<Child> children = (List<Child>)request.getAttribute("children");
                     %>
                     <select name="children" multiple style="width: 200px; height: 200px">
                         <%  long presentChild = 0;
-                            for(Map<String, String> child : children) {
+                            for(Child child : children) {
                             if (childrenGroup != null) {
-                                presentChild = childrenGroup.stream().filter(childGroup -> childGroup.get("id").equals(child.get("id")))
+                                presentChild = childrenGroup.stream().filter(childGroup -> childGroup.get("id").equals(String.valueOf(child.getId())))
                                         .count();
                             }
                         %>
-                        <option value="<%= child.get("id") %>"
+                        <option value="<%= child.getId() %>"
                             <% if(presentChild != 0) { %> selected <% } %> >
-                            <%= child.get("Имя") %>
+                            <%= child.getFullName() %>
                         </option>
                         <%
                             }

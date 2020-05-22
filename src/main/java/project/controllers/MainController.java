@@ -9,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import project.services.AdminService;
-import project.services.UserService;
+import project.model.entities.Course;
+import project.services.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,16 +24,15 @@ import java.util.List;
 @Controller
 public class MainController {
     @Autowired
-    private AdminService adminService;
+    private CourseService courseService;
     @Autowired
-    private UserService userService;
+    private EmployeeService employeeService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private ChildService childService;
 
-    @RequestMapping("/")
-    public String welcome (Model model) {
-        return "redirect:/main";
-    }
-
-    @RequestMapping(value = "/main")
+    @RequestMapping("/main")
     public String main (@RequestParam(value = "mainAction", defaultValue = "calendar") String mainAction,
                         Model model, Principal principal) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,7 +59,7 @@ public class MainController {
             model.addAttribute("enddate", endDate);
             schedule(startDate, endDate,null, model, principal);
         } else {
-            model.addAttribute("employees", adminService.getAllTeachers());
+            model.addAttribute("employees", employeeService.getAllTeachers());
         }
         return new ModelAndView("calendar");
     }
@@ -73,9 +72,9 @@ public class MainController {
                                   Model model, Principal principal) throws ParseException {
         List<HashMap<String, String>> schedule;
         if(employee==null) {
-            schedule = userService.getSchedule(principal.getName(), start, end);
+            schedule = groupService.getScheduleByUsername(principal.getName(), start, end);
         } else {
-            schedule = adminService.getSchedule(employee, start, end);
+            schedule = groupService.getScheduleById(employee, start, end);
         }
         model.addAttribute("schedule", schedule);
         return new ModelAndView("schedule");
@@ -101,5 +100,16 @@ public class MainController {
     @RequestMapping(value =  "/error", method = RequestMethod.GET)
     public String error () {
         return "error";
+    }
+
+    @RequestMapping("/infoGroup")
+    public String infoGroup(@RequestParam(value = "groupId") String groupId, Model model, Principal principal) {
+        model.addAttribute("group", groupService.getClassNameById(groupId));
+        model.addAttribute("name", principal.getName());
+        Course course = courseService.getCourseByGroup(groupId);
+        model.addAttribute("course", course);
+        List<HashMap<String, String>> children = childService.getChildrenByGroup(groupId);
+        model.addAttribute("children", children);
+        return "infoGroup";
     }
 }

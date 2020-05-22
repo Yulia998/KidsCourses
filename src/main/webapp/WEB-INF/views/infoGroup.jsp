@@ -21,10 +21,10 @@
 </header>
     <h2>${group}</h2>
     <div class="courseInfo">
-        <div align="center"><b>${course.get("name")}</b></div>
+        <div align="center"><b>${course.getName()}</b></div>
         <div>
-            <p><i>Описание:</i> ${course.get("description")}</p>
-            <p><i>Количество занятий:</i> ${course.get("duration")}</p>
+            <p><i>Описание:</i> ${course.getDescription()}</p>
+            <p><i>Количество занятий:</i> ${course.getDuration()}</p>
         </div>
     </div>
     <div class="infoTable">

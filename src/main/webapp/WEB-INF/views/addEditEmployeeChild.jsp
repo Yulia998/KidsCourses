@@ -23,8 +23,8 @@
         </div>
     </header>
     <div class="container">
-        <c:if test="${peopleEdit.get('id') != null}">
-        <c:set var="emplId" value="?id=${peopleEdit.get('id')}"/>
+        <c:if test="${peopleEdit.getId() != null}">
+        <c:set var="emplId" value="?id=${peopleEdit.getId()}"/>
         </c:if>
     <form action="<c:url value='/${urlForm}/${action}${emplId}' />" method="POST">
         <c:if test="${errorAdd}">
@@ -33,29 +33,29 @@
         <table>
             <tr>
                 <td><label>Имя</label></td>
-                <td><input type="text" name="name" required value="${peopleEdit.get('eName')}"></td>
+                <td><input type="text" name="name" required value="${peopleEdit.getFullName()}"></td>
             </tr>
             <tr>
                 <td><label>День рождение</label></td>
-                <td><input type="date" name="birthday" required value="${peopleEdit.get('birthday')}"></td>
+                <td><input type="date" name="birthday" required value="${peopleEdit.getBirthday()}"></td>
             </tr>
             <tr>
                 <td><label>Телефон</label></td>
-                <td><input type="text" maxlength="13" name="tel" value="${peopleEdit.get('tel')}"></td>
+                <td><input type="text" maxlength="13" name="tel" value="${peopleEdit.getTelephone()}"></td>
             </tr>
             <tr>
                 <td><label>Город</label></td>
-                <td><input type="text" name="city" required value="${peopleEdit.get('city')}"></td>
+                <td><input type="text" name="city" required value="${peopleEdit.getCity()}"></td>
             </tr>
             <c:if test="${isEmployee}">
             <tr>
                 <td><label>Начальник</label></td>
                 <td>
                     <select name="manager" required>
-                        <option selected value="${peopleEdit.get('mId')}">${peopleEdit.get('mName')}</option>
+                        <option selected value="${peopleEdit.getManager().getId()}">${peopleEdit.getManager().getFullName()}</option>
                         <c:forEach var="employee" items="${employees}">
-                            <c:if test="${employee.get('id') ne peopleEdit.get('mId')}">
-                            <option value="${employee.get("id")}">${employee.get("Имя")}</option>
+                            <c:if test="${employee.getId() ne peopleEdit.getManager().getId() && employee.getId() ne peopleEdit.getId()}">
+                            <option value="${employee.getId()}">${employee.getFullName()}</option>
                             </c:if>
                         </c:forEach>
                     </select>
@@ -63,11 +63,11 @@
             </tr>
             <tr>
                 <td><label>Логин</label></td>
-                <td><input type="text" name="login" required value="${peopleEdit.get('username')}"> </td>
+                <td><input type="text" name="login" required value="${peopleEdit.getLogin()}"> </td>
             </tr>
             <tr>
                 <td><label>Пароль</label></td>
-                <td><input type="text" name="password" required value="${peopleEdit.get('password')}"></td>
+                <td><input type="text" name="password" required value="${peopleEdit.getPassword()}"></td>
             </tr>
             </c:if>
             <tr>
