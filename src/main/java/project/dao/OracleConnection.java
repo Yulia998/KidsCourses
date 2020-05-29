@@ -38,7 +38,7 @@ public class OracleConnection {
             DataSource ds = (DataSource) ctx.lookup(dataSource);
             connection = ds.getConnection();
         } catch (NamingException | SQLException e) {
-            LOGGER.error("Ошибка при подключении к базе данных", e);
+            LOGGER.error("Error in connection to db", e);
         }
     }
 
@@ -48,10 +48,12 @@ public class OracleConnection {
             if (resultSet != null) {
                 resultSet.close();
             }
-            statement.close();
+            if(statement != null) {
+                statement.close();
+            }
             ctx.close();
         } catch (Exception e) {
-            LOGGER.error("Ошибка при отсоединении в базе данных", e);
+            LOGGER.error("Error in disconnection from db", e);
         }
     }
 
@@ -63,7 +65,7 @@ public class OracleConnection {
             statement.setInt(1, id);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при удалении таблицы "  + table, e);
+            LOGGER.error("Error in deleting row in table "  + table, e);
         }
         disconnect();
     }
@@ -83,7 +85,7 @@ public class OracleConnection {
             FileInputStream fis = new FileInputStream(insert);
             scriptRunner.runScript(new BufferedReader(new InputStreamReader(fis, "UTF-8")));
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
-            LOGGER.error("Не найден файл для создания/вставки данных бд", e);
+            LOGGER.error("Files for creating/inserting data into bd not found", e);
         }
         disconnect();
     }

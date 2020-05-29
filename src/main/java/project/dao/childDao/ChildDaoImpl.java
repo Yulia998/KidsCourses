@@ -3,6 +3,7 @@ package project.dao.childDao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import project.dao.OracleConnection;
+import project.dao.SqlConstants;
 import project.model.entities.Child;
 
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
         List<Child> children = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT * FROM CHILD ORDER BY FULLNAME");
+            statement = connection.prepareStatement(SqlConstants.GET_ALL_CHILDREN);
             resultSet = statement.executeQuery();
             Child child;
             while (resultSet.next()) {
@@ -25,7 +26,7 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
                 children.add(child);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении всех детей", e);
+            LOGGER.error("Error in getting all children", e);
         }
         disconnect();
         return children;
@@ -34,11 +35,11 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
     public void addChild (Child child) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO CHILD VALUES (CHILD_SEQ.NEXTVAL, ?, ?, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_CHILD);
             setParamQuery(child);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении ребенка", e);
+            LOGGER.error("Error in adding child", e);
         }
         disconnect();
     }
@@ -53,14 +54,12 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
     public void updateChild (Child child) {
         connect();
         try {
-            statement = connection.prepareStatement("UPDATE CHILD SET FULLNAME=?, " +
-                    "BIRTHDAY=?, CITY=?, TELPARENT=? " +
-                    "WHERE CHILDID=?");
+            statement = connection.prepareStatement(SqlConstants.UPDATE_CHILD);
             setParamQuery(child);
             statement.setInt(5, child.getId());
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при обновлении ребенка", e);
+            LOGGER.error("Error in updating child", e);
         }
         disconnect();
     }
@@ -69,14 +68,14 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
         Child child = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT * FROM CHILD WHERE CHILDID=?");
+            statement = connection.prepareStatement(SqlConstants.CHILD_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 child = getChild(resultSet);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении ребенка по id", e);
+            LOGGER.error("Error in getting child by id", e);
         }
         disconnect();
         return child;
@@ -99,13 +98,12 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
     public void deleteChSchedule(int childId, int classId) {
         connect();
         try {
-            statement = connection.prepareStatement("DELETE FROM CHSCHEDULE " +
-                    "WHERE CHILDID = ? AND CLASSID = ?");
+            statement = connection.prepareStatement(SqlConstants.DELETE_CHSCHEDULE);
             statement.setInt(1, childId);
             statement.setInt(2, classId);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при удалении расписания ребенка", e);
+            LOGGER.error("Error in deleting child schedule", e);
         }
         disconnect();
     }
@@ -114,12 +112,12 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
     public void addChildSchedule (int childId, int classId) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO CHSCHEDULE VALUES (CHSCHEDULE_SEQ.NEXTVAL, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_CHSCHEDULE);
             statement.setInt(1, childId);
             statement.setInt(2, classId);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении расписания ребенка", e);
+            LOGGER.error("Error in adding child schedule", e);
         }
         disconnect();
     }
@@ -128,10 +126,7 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
         List<HashMap<String, String>> children = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT CHILD.CHILDID, CHILD.FULLNAME, TRUNC(MONTHS_BETWEEN(SYSDATE, CHILD.BIRTHDAY)/12) AS AGE " +
-                    "FROM CHILD, CHSCHEDULE SC, CLASS " +
-                    "WHERE SC.CLASSID=CLASS.CLASSID AND SC.CHILDID=CHILD.CHILDID " +
-                    "AND CLASS.CLASSID=?");
+            statement = connection.prepareStatement(SqlConstants.CHILDREN_BY_GROUP);
             statement.setInt(1, groupId);
             resultSet = statement.executeQuery();
             HashMap<String, String> result;
@@ -143,7 +138,7 @@ public class ChildDaoImpl extends OracleConnection implements ChildDao {
                 children.add(result);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении детей по группе", e);
+            LOGGER.error("Error in getting child by group", e);
         }
         disconnect();
         return children;

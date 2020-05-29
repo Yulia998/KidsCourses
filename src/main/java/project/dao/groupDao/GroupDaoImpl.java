@@ -3,6 +3,7 @@ package project.dao.groupDao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import project.dao.OracleConnection;
+import project.dao.SqlConstants;
 import project.model.entities.Course;
 import project.model.entities.Group;
 
@@ -19,8 +20,7 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
         List<Group> classes = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT CLASS.CLASSID, CLASS.NAME, CLASS.STARTDATE, COURSE.NAME COURSENAME, COURSE.COURSEID " +
-                    "FROM CLASS LEFT JOIN COURSE ON CLASS.COURSEID=COURSE.COURSEID");
+            statement = connection.prepareStatement(SqlConstants.GET_ALL_GROUPS);
             resultSet = statement.executeQuery();
             Group group;
             while (resultSet.next()) {
@@ -29,7 +29,7 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
                 classes.add(group);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении всех групп", e);
+            LOGGER.error("Error in getting all groups", e);
         }
         disconnect();
         return classes;
@@ -49,11 +49,11 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
     public void addClass (Group group) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO CLASS VALUES (CLASS_SEQ.NEXTVAL, ?, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_GROUP);
             setParamQuery(group);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении группы", e);
+            LOGGER.error("Error in adding group", e);
         }
         disconnect();
     }
@@ -68,14 +68,14 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
         Group group = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT * FROM CLASS WHERE NAME=?");
+            statement = connection.prepareStatement(SqlConstants.GROUP_BY_NAME);
             statement.setString(1, name);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 group = getGroup(resultSet);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении группы по названию", e);
+            LOGGER.error("Error in getting group by name", e);
         }
         disconnect();
         return group;
@@ -85,14 +85,14 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
         String name = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT NAME FROM CLASS WHERE CLASSID=?");
+            statement = connection.prepareStatement(SqlConstants.GROUP_NAME_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 name = resultSet.getString("NAME");
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении группы по id", e);
+            LOGGER.error("Error in getting group by id", e);
         }
         disconnect();
         return name;
@@ -101,14 +101,12 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
     public void updateClass(Group group) {
         connect();
         try {
-            statement = connection.prepareStatement("UPDATE CLASS SET COURSEID=?, " +
-                    "NAME=?, STARTDATE=? " +
-                    "WHERE CLASSID=?");
+            statement = connection.prepareStatement(SqlConstants.UPDATE_GROUP);
             setParamQuery(group);
             statement.setInt(4, group.getId());
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при обновлении группы", e);
+            LOGGER.error("Error in updating group", e);
         }
         disconnect();
     }
@@ -117,17 +115,14 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
         List<String> dateTime = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT DATA.LESSONDATE " +
-                    "FROM CLASS, LESSONTIME DATA " +
-                    "WHERE DATA.CLASSID=CLASS.CLASSID " +
-                    "AND CLASS.CLASSID = ? ORDER BY DATA.LESSONDATE");
+            statement = connection.prepareStatement(SqlConstants.LESSONS_BY_GROUP);
             statement.setInt(1, classId);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 dateTime.add(resultSet.getString("LESSONDATE"));
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении времени занятий по группе", e);
+            LOGGER.error("Error in getting lesson date and time by group", e);
         }
         disconnect();
         return dateTime;
@@ -136,12 +131,12 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
     public void addLessonTime (int classId, Timestamp lessondate) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO LESSONTIME VALUES (LESSONTIME_SEQ.NEXTVAL, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_LESSON);
             statement.setInt(1, classId);
             statement.setTimestamp(2, lessondate);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении время занятия", e);
+            LOGGER.error("Error in adding lesson date and time", e);
         }
         disconnect();
     }
@@ -149,12 +144,11 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
     public void deleteLessonTime(int classId) {
         connect();
         try {
-            statement = connection.prepareStatement("DELETE FROM LESSONTIME WHERE " +
-                    "CLASSID = ?");
+            statement = connection.prepareStatement(SqlConstants.DELETE_LESSON);
             statement.setInt(1, classId);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при удалении времени занятия", e);
+            LOGGER.error("Error in deleting lesson date and time", e);
         }
         disconnect();
     }
@@ -163,12 +157,7 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
         List<HashMap<String, String>> schedule = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT class.classid, class.name, lessontime.lessondate, status.name statusname " +
-                    "FROM lessontime, class, empschedule sc, employee em, status " +
-                    "WHERE em.employeeid=sc.employeeid AND sc.classid=class.classid AND lessontime.classid=class.classid AND sc.statusid=status.statusid " +
-                    "AND lessontime.lessondate BETWEEN TO_DATE (?, 'yyyy-mm-dd') AND TO_DATE (?, 'yyyy-mm-dd') " +
-                    "AND em.employeeid=? " +
-                    "ORDER BY lessontime.lessondate");
+            statement = connection.prepareStatement(SqlConstants.GET_SCHEDULE);
             statement.setString(1, startDate);
             statement.setString(2, endDate);
             statement.setString(3, id);
@@ -183,7 +172,7 @@ public class GroupDaoImpl extends OracleConnection implements GroupDao {
                 schedule.add(result);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении расписания", e);
+            LOGGER.error("Error in getting lesson schedule", e);
         }
         disconnect();
         return schedule;

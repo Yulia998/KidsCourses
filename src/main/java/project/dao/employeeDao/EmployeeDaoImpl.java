@@ -3,6 +3,7 @@ package project.dao.employeeDao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import project.dao.OracleConnection;
+import project.dao.SqlConstants;
 import project.model.entities.Employee;
 
 import java.sql.ResultSet;
@@ -17,16 +18,14 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         String id = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT EMPLOYEEID " +
-                    "FROM EMPLOYEE " +
-                    "WHERE EMPLOYEE.USERNAME = ?");
+            statement = connection.prepareStatement(SqlConstants.ID_OF_EMPLOYEE);
             statement.setString(1, username);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 id = resultSet.getString("EMPLOYEEID");
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении id пользователя", e);
+            LOGGER.error("Error in getting id of employee", e);
         }
         disconnect();
         return id;
@@ -36,10 +35,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         List<Employee> empl = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT EMP.EMPLOYEEID, EMP.FULLNAME ENAME, EMP.BIRTHDAY, " +
-                    "EMP.TELEPHONE, EMP.CITY, MNG.EMPLOYEEID MID, MNG.FULLNAME MNAME, EMP.USERNAME, EMP.PASSWORD " +
-                    "FROM EMPLOYEE EMP LEFT JOIN EMPLOYEE MNG " +
-                    "ON EMP.MANAGER=MNG.EMPLOYEEID");
+            statement = connection.prepareStatement(SqlConstants.GET_ALL_EMPLOYEES);
             resultSet = statement.executeQuery();
             Employee employee;
             while (resultSet.next()) {
@@ -47,7 +43,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
                 empl.add(employee);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении всех работников", e);
+            LOGGER.error("Error in getting all employees", e);
         }
         disconnect();
         return empl;
@@ -56,11 +52,11 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
     public void addEmployee (Employee employee) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO EMPLOYEE VALUES (EMPLOYEE_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_EMPLOYEE);
             setParamQuery(employee);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении работника", e);
+            LOGGER.error("Error in adding employee", e);
         }
         disconnect();
     }
@@ -79,18 +75,14 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         Employee employee = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT EMP.EMPLOYEEID, EMP.FULLNAME ENAME, EMP.BIRTHDAY, " +
-                    "EMP.TELEPHONE, EMP.CITY, MNG.EMPLOYEEID MID, MNG.FULLNAME MNAME, EMP.USERNAME, EMP.PASSWORD " +
-                    "FROM EMPLOYEE EMP LEFT JOIN EMPLOYEE MNG " +
-                    "ON EMP.MANAGER=MNG.EMPLOYEEID " +
-                    "WHERE EMP.EMPLOYEEID=?");
+            statement = connection.prepareStatement(SqlConstants.EMPLOYEE_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 employee = getEmployee(resultSet);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении работника по id", e);
+            LOGGER.error("Error in getting employee by id", e);
         }
         disconnect();
         return employee;
@@ -115,14 +107,12 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
     public void updateEmployee (Employee employee) {
         connect();
         try {
-            statement = connection.prepareStatement("UPDATE EMPLOYEE SET FULLNAME=?," +
-                    "BIRTHDAY=?, TELEPHONE=?, CITY=?, MANAGER=?, USERNAME=?, PASSWORD=?" +
-                    "WHERE EMPLOYEEID=?");
+            statement = connection.prepareStatement(SqlConstants.UPDATE_EMPLOYEE);
             setParamQuery(employee);
             statement.setInt(8, employee.getId());
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при обновлении работника", e);
+            LOGGER.error("Error in updating employee", e);
         }
         disconnect();
     }
@@ -131,10 +121,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         Map<String, String> user = new HashMap<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT EMP.PASSWORD, STATUS.NAME " +
-                    "FROM EMPLOYEE EMP, EMPSCHEDULE SC, STATUS " +
-                    "WHERE SC.EMPLOYEEID=EMP.EMPLOYEEID AND SC.STATUSID=STATUS.STATUSID " +
-                    "AND EMP.USERNAME=?");
+            statement = connection.prepareStatement(SqlConstants.USER);
             statement.setString(1, username);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -142,7 +129,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
                 user.put("status", resultSet.getString("NAME"));
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении пользователя", e);
+            LOGGER.error("Error in getting user", e);
         }
         disconnect();
         return user;
@@ -152,10 +139,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         List<Employee> empl = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT DISTINCT EMP.EMPLOYEEID, EMP.FULLNAME " +
-                    "FROM EMPLOYEE EMP, EMPSCHEDULE SC, STATUS " +
-                    "WHERE EMP.EMPLOYEEID=SC.EMPLOYEEID AND SC.STATUSID=STATUS.STATUSID " +
-                    "AND STATUS.NAME IN ('ASSISTANT','PRO')");
+            statement = connection.prepareStatement(SqlConstants.GET_ALL_TEACHERS);
             resultSet = statement.executeQuery();
             Employee employee;
             while (resultSet.next()) {
@@ -165,7 +149,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
                 empl.add(employee);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении всех учителей", e);
+            LOGGER.error("Error in getting all teachers", e);
         }
         disconnect();
         return empl;
@@ -179,14 +163,14 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         int statusId = 0;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT STATUSID FROM STATUS WHERE NAME=?");
+            statement = connection.prepareStatement(SqlConstants.GET_STATUS_ID);
             statement.setString(1, name);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 statusId = resultSet.getInt("STATUSID");
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении id статуса", e);
+            LOGGER.error("Error in getting status id", e);
         }
         disconnect();
         return statusId;
@@ -195,13 +179,13 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
     public void addEmpSchedule (int employeeId, int statusId, int classId) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO EMPSCHEDULE VALUES (EMPSCHEDULE_SEQ.NEXTVAL, ?, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_EMPSCHEDULE);
             statement.setInt(1, employeeId);
             statement.setInt(2, statusId);
             statement.setInt(3, classId);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении расписания работника", e);
+            LOGGER.error("Error in adding employee schedule", e);
         }
         disconnect();
     }
@@ -209,15 +193,13 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
     public void updateEmpSchedule(int employeeId, String status, int classId) {
         connect();
         try {
-            statement = connection.prepareStatement("UPDATE EMPSCHEDULE SET EMPLOYEEID=? " +
-                    "WHERE CLASSID=? AND STATUSID=" +
-                    "(SELECT STATUSID FROM STATUS WHERE NAME=?)");
+            statement = connection.prepareStatement(SqlConstants.UPDATE_EMPSCHEDULE);
             statement.setInt(1, employeeId);
             statement.setInt(2, classId);
             statement.setString(3, status);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при обновлении расписания сотрудника", e);
+            LOGGER.error("Error in updating employee schedule", e);
         }
         disconnect();
     }
@@ -226,10 +208,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
         List<HashMap<String, String>> teachers = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT EMPSC.EMPSCHEDULEID, EMP.EMPLOYEEID, EMP.FULLNAME, STATUS.NAME " +
-                    "FROM CLASS, EMPSCHEDULE EMPSC, STATUS, EMPLOYEE EMP " +
-                    "WHERE EMP.EMPLOYEEID=EMPSC.EMPLOYEEID AND EMPSC.STATUSID=STATUS.STATUSID AND EMPSC.CLASSID=CLASS.CLASSID " +
-                    "AND CLASS.CLASSID = ?");
+            statement = connection.prepareStatement(SqlConstants.TEACHERS_BY_GROUP);
             statement.setInt(1, classId);
             resultSet = statement.executeQuery();
             HashMap<String, String> result;
@@ -242,7 +221,7 @@ public class EmployeeDaoImpl extends OracleConnection implements EmployeeDao {
                 teachers.add(result);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении учителей по группе", e);
+            LOGGER.error("Error in getting teachers by group", e);
         }
         disconnect();
         return teachers;

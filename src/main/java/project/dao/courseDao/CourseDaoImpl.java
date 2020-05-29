@@ -3,6 +3,7 @@ package project.dao.courseDao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import project.dao.OracleConnection;
+import project.dao.SqlConstants;
 import project.model.entities.Course;
 
 import java.sql.ResultSet;
@@ -17,16 +18,14 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
         Course course = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT COURSE.* " +
-                    "FROM COURSE, CLASS " +
-                    "WHERE CLASS.COURSEID=COURSE.COURSEID AND CLASS.CLASSID=?");
+            statement = connection.prepareStatement(SqlConstants.COURSE_BY_GROUP);
             statement.setInt(1, groupId);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 course = getCourse(resultSet);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении курса по группе", e);
+            LOGGER.error("Error in getting course by group", e);
         }
         disconnect();
         return course;
@@ -36,7 +35,7 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
         List<Course> courses = new ArrayList<>();
         connect();
         try {
-            statement = connection.prepareStatement("SELECT * FROM COURSE");
+            statement = connection.prepareStatement(SqlConstants.GET_ALL_COURSES);
             resultSet = statement.executeQuery();
             Course course;
             while (resultSet.next()) {
@@ -44,7 +43,7 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
                 courses.add(course);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении всех курсов", e);
+            LOGGER.error("Error in getting all courses", e);
         }
         disconnect();
         return courses;
@@ -53,11 +52,11 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
     public void addCourse (Course course) {
         connect();
         try {
-            statement = connection.prepareStatement("INSERT INTO COURSE VALUES (COURSE_SEQ.NEXTVAL, ?, ?, ?, ?)");
+            statement = connection.prepareStatement(SqlConstants.ADD_COURSE);
             setParamQuery(course);
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при добавлении курса", e);
+            LOGGER.error("Error in adding course", e);
         }
         disconnect();
     }
@@ -72,14 +71,12 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
     public void updateCourse (Course course) {
         connect();
         try {
-            statement = connection.prepareStatement("UPDATE COURSE SET NAME=?, " +
-                    "DESCRIPTION=?, DURATION=?, PRICE=? " +
-                    "WHERE COURSEID=?");
+            statement = connection.prepareStatement(SqlConstants.UPDATE_COURSE);
             setParamQuery(course);
             statement.setInt(5, course.getId());
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при обновлении курса", e);
+            LOGGER.error("Error in updating course", e);
         }
         disconnect();
     }
@@ -88,15 +85,14 @@ public class CourseDaoImpl extends OracleConnection implements CourseDao {
         Course course = null;
         connect();
         try {
-            statement = connection.prepareStatement("SELECT * FROM COURSE " +
-                    "WHERE COURSEID=?");
+            statement = connection.prepareStatement(SqlConstants.COURSE_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 course = getCourse(resultSet);
             }
         } catch (SQLException e) {
-            LOGGER.error("Ошибка при получении курса по id", e);
+            LOGGER.error("Error in getting course by id", e);
         }
         disconnect();
         return course;
