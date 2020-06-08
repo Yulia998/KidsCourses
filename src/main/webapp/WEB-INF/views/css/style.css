@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    min-width: 600px;
+}
+header {
+    height: 45px;
+    background: #A4D3E0;
+}
+.logout{
+    display: inline-block;
+}
+.username, a{
+    letter-spacing: 1px;
+    padding: 10px 10px;
+    font-weight: bold;
+}
+.username{
+    display: inline-block;
+    width: 80%;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 20px;
+    color: darkgoldenrod;
+}
+a {
+    text-decoration: none;
+    transition: 0.4s ease-in-out;
+}
+.logout a {
+    color: black;
+    font-size: 18px;
+}
+.logout a:hover {
+    color: white;
+}
+form.userForm{
+    border: 3px solid #00b0ff;
+    width: 400px;
+    margin: auto;
+    margin-top: 50px;
+}
+.text{
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 10px;
+}
+.btn{
+    margin-left: 40%;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+    color:  #36454A;
+    background: -webkit-linear-gradient(top, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+    background: -o-linear-gradient(top, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+    background: linear-gradient(to top, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+    box-shadow: 2px 2px 3px black;
+}
+.btn:hover{
+    background: -webkit-linear-gradient(bottom, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+    background: -o-linear-gradient(bottom, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+    background: linear-gradient(to bottom, #A4D3E0 , #A4D3E0 50%, #CBE3EB 50%);
+}
+h2{
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid;
+    border-top: 1px solid;
+}
+.courseInfo{
+    width: 40%;
+    background-color: beige;
+    margin: 10px;
+    padding: 10px;
+    float: left;
+}
+.infoTable{
+    width: 30%;
+    float: left;
+    margin-left: 10%;
+    padding: 10px;
+}
+.infoTable table{
+    border: 1px solid #69c;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.infoTable th {
+    font-weight: normal;
+    border-bottom: 1px dashed #69c;
+    padding: 12px 17px;
+}
+.infoTable td {
+    padding: 7px 17px;
+    border-bottom: 1px solid #69c;
+}
+#header-text {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    color: darkblue;
+}
+#main {
+    margin: auto;
+}
+#main-box{
+    display: inline-block;
+    width: 200px;
+    background-color: #f2f2f2;
+    border: 1px solid;
+    margin-left: 10px;
+    border-radius: 5px;
+    border: 1px solid #69c;
+}
+#main-header {
+    text-align: center;
+    border-bottom: 1px solid #69c;
+    padding: 10px;
+    font-size: 17px;
+    font-weight: bold;
+}
+#main-text {
+    text-align: center;
+    padding: 10px;
+}
